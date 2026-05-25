@@ -98,6 +98,22 @@
       <!-- Navier-Stokes Fluid Simulation Canvas -->
       <canvas id="fluid-canvas" class="absolute inset-0 w-full h-full cursor-crosshair z-10 block transition-all"></canvas>
 
+      <!-- Top Instruction text -->
+      <div class="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-none z-20 text-center bg-slate-950/40 px-4 py-2 rounded-lg backdrop-blur-xs border border-slate-800/10">
+        <p class="text-xs sm:text-sm font-medium text-slate-300 select-none tracking-wide">
+          Click and drag to interact with fluid
+        </p>
+      </div>
+
+      <!-- "My Artwork" Link, absolutely positioned dynamically above KDAWG center -->
+      <a href="https://www.artstation.com/kdawg5000" target="_blank" rel="noopener noreferrer" class="absolute pointer-events-auto text-sky-400 hover:text-sky-300 font-mono text-xs uppercase tracking-widest bg-slate-900/80 hover:bg-slate-950 border border-sky-500/30 px-4 py-1.5 rounded-full backdrop-blur-sm transition-all shadow-xl hover:scale-105 cursor-pointer flex items-center gap-1.5 left-1/2 -translate-x-1/2 -translate-y-full z-20" id="my-artwork-link" style="top: 35%;">
+        <span>My Artwork</span>
+        <!-- External Link Icon -->
+        <svg class="w-3 h-3 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      </a>
+
       <!-- Controls Capsule Bottom-Right -->
       <div class="absolute bottom-6 right-6 z-30 pointer-events-auto">
         <div id="controls-panel" class="bg-slate-900/80 backdrop-blur-md border border-slate-700/50 rounded-xl shadow-2xl transition-all duration-300 ease-in-out w-14 h-14 overflow-hidden flex flex-col">
@@ -920,6 +936,8 @@
           this.obstacleCanvas.height = this.canvas.height;
 
           const ctx = this.obstacleCanvas.getContext('2d');
+          let textFontSize = 0;
+
           if (ctx) {
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -928,6 +946,7 @@
               ctx.fillStyle = 'white';
               const baseFontSize = Math.min(this.canvas.width * 0.16, this.canvas.height * 0.28);
               const fontSize = baseFontSize * this.config.OBSTACLE_SCALE;
+              textFontSize = fontSize;
               ctx.font = `900 ${fontSize}px system-ui, -apple-system, sans-serif`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
@@ -935,6 +954,21 @@
               ctx.shadowColor = 'white';
               ctx.shadowBlur = 3;
               ctx.fillText(this.config.OBSTACLE_TEXT, this.canvas.width / 2, this.canvas.height / 2);
+            }
+          }
+
+          // Dynamically position the "My Artwork" link above KDAWG text
+          const artworkLink = document.getElementById('my-artwork-link');
+          if (artworkLink) {
+            if (this.config.OBSTACLE_ENABLED && this.config.OBSTACLE_TEXT && textFontSize > 0) {
+              // Center minus half the glyph height minus desired padding
+              const topOffset = Math.max(80, (this.canvas.height / 2) - (textFontSize * 0.4) - 24);
+              artworkLink.style.top = `${topOffset}px`;
+              artworkLink.style.display = 'flex';
+            } else {
+              // If obstacle text is disabled, position the link gracefully around center
+              artworkLink.style.top = '40%';
+              artworkLink.style.display = 'flex';
             }
           }
 
