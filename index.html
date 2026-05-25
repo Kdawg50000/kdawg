@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
     <title>Interactive Fluid Simulation</title>
     <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,6 +18,11 @@
         cursor: default;
         user-select: none;
         -webkit-user-select: none;
+        overflow: hidden;
+      }
+      canvas {
+        touch-action: none;
+        overflow: hidden;
       }
       .font-mono {
         font-family: 'JetBrains Mono', monospace;
@@ -884,9 +889,18 @@
         }
 
         addEventListeners() {
-          this.canvas.addEventListener('pointerdown', this.onPointerDown);
-          this.canvas.addEventListener('pointermove', this.onPointerMove);
+          this.canvas.addEventListener('pointerdown', this.onPointerDown, { passive: false });
+          this.canvas.addEventListener('pointermove', this.onPointerMove, { passive: false });
           this.canvas.addEventListener('pointerup', this.onPointerUp);
+          
+          this._onTouchPrevent = (e) => {
+            if (e.cancelable) {
+              e.preventDefault();
+            }
+          };
+          this.canvas.addEventListener('touchmove', this._onTouchPrevent, { passive: false });
+          this.canvas.addEventListener('touchstart', this._onTouchPrevent, { passive: false });
+          this.canvas.addEventListener('touchend', this._onTouchPrevent, { passive: false });
           window.addEventListener('resize', this.onResize);
         }
 
@@ -894,6 +908,11 @@
           this.canvas.removeEventListener('pointerdown', this.onPointerDown);
           this.canvas.removeEventListener('pointermove', this.onPointerMove);
           this.canvas.removeEventListener('pointerup', this.onPointerUp);
+          if (this._onTouchPrevent) {
+            this.canvas.removeEventListener('touchmove', this._onTouchPrevent);
+            this.canvas.removeEventListener('touchstart', this._onTouchPrevent);
+            this.canvas.removeEventListener('touchend', this._onTouchPrevent);
+          }
           window.removeEventListener('resize', this.onResize);
         }
 
@@ -988,12 +1007,18 @@
         }
 
         onPointerDown(e) {
+          if (e.cancelable) {
+            e.preventDefault();
+          }
           this.pointer.down = true;
           this.pointer.color = this.generateColor();
           this.updatePointer(e);
         }
 
         onPointerMove(e) {
+          if (e.cancelable) {
+            e.preventDefault();
+          }
           if (!this.pointer.down) return;
           this.updatePointer(e);
         }
