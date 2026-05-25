@@ -1,0 +1,8 @@
+{
+  "name": "Interactive Fluid Simulation",
+  "description": "A colorful, interactive fluid dynamics simulation that mimics the Navier-Stokes equations using WebGL for a visually stunning and performant experience. Users can stir the fluid with their mouse or touch to create mesmerizing patterns.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
